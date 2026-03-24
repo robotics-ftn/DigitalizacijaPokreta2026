@@ -43,8 +43,7 @@ def intrinsic_calibrate(images_dir, rows, cols, cell_size, output_file):
 
     print(f"\nCalibrating with {len(obj_points)} images ...")
     rms, camera_matrix, dist_coeffs, rvecs, tvecs = cv2.calibrateCamera(
-        obj_points, img_points, image_size, None, None
-    )
+        obj_points, img_points, image_size, None, None, criteria=criteria)
 
     print(f"\nRMS reprojection error : {rms:.4f} px")
     print("\nCamera matrix:\n", camera_matrix)

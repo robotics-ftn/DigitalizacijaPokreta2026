@@ -17,7 +17,8 @@ Skripte
 
 **1_data_creation.py**
 
-Uživo prikaz sa kamere, pritiskom na SPACE trenutni kadar (frame) se čuva u zadatom direktorijumu ***output_dir***. Potrebno je oko 20 kadroma u nekom opštem slučaju.
+Uživo prikaz sa kamere, pritiskom na SPACE trenutni kadar (frame) se čuva u zadatom direktorijumu ***output_dir***. Potrebno je oko 40-50 kadrova u nekom opštem slučaju. 
+Moze se koristiti **tablaA4.pdf** tako sto ce se odstampati na A4 papiru i fiksirati na ravnu povrsinu.
 
 **2_intrinsic_calibration.py**
 
@@ -36,9 +37,16 @@ Izlaz iz funkcije za kalibraciju sastoji se od:
 - root means square (**RMS**): prosečna greška reprojekcije, težimo ka 0 u idelanom slučaju
 - rezolucija slike
 
-**3_extrincit_calibration.py**
+**3a_detect_board_pose.py**
 
-**TODO**
+Prikazuje se uzivo prikaz sa kamere. Nad svakom slikom se detektuje sahovska tabla i vizualizuje njen polozaj
+na slici. Pritiskom na taster SPACE, skladiste se:
+- vektor translacije
+- vektor rotacije
+- slika
+
+Nakon sto smo gotovi sa prikupljanjem makar 5 elemenata, pritiskom na ESC taster, zavrsava se prikupljanje i vrednosti se usrednjuju.
+Rezultat kalibracije poze kamere se skladisti u **output/pose/camera.npz**.
 
 **4_undistord.py**
 

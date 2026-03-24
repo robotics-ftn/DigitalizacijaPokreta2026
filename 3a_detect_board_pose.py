@@ -1,6 +1,5 @@
 """Detekcija poze table i iscrtavanje na nju
     """
-from pathlib import Path
 import cv2
 import numpy as np
 
@@ -33,6 +32,7 @@ if __name__ == "__main__":
 
     camera_param_path = "output/calib/camera.npz"
     pose_save_path = "output/pose/camera.npz"
+    image_save_path_root = "output/pose/images"
 
     camera_data = np.load(camera_param_path)
     camera_matrix = camera_data["camera_matrix"]
@@ -45,7 +45,9 @@ if __name__ == "__main__":
 
     all_tvecs = []
     all_rvecs = []
+
     flg_store = False
+    counter = 0
     while True:
 
         ret, frame = camera.read()
@@ -57,31 +59,34 @@ if __name__ == "__main__":
                                          rows, cols, cell_size,
                                          True  # Visualize
                                          )
-        cv2.imshow("Camera", img)
+
+        key = cv2.waitKey(1)
+        display = img.copy()
+        cv2.putText(display, f"Captured: {counter} Store: {flg_store}| SPACE=save  ESC=quit",
+                    (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
         if tvec is not None and rvec is not None:
             if flg_store:
                 all_tvecs.append(tvec)
                 all_rvecs.append(rvec)
-            # print(f"Translation: {tvec}")
+                counter += 1
+                flg_store = False
+                save_path = f"{image_save_path_root}/pose_{counter:04d}.png"
+                print(f"Saving image to path: {save_path}")
+                cv2.imwrite(save_path, img)
 
-            # rot, _ = cv2.Rodrigues(rvec)
-            # print(f"Rotation vector: \n{rvec}")
-            # print(f"Rotation: \n{rot}")
+        if key == 27:  # ESC
+            if all_tvecs and all_rvecs:
+                print(f"Translation: {all_tvecs[-1]}")
+                rot, _ = cv2.Rodrigues(all_rvecs[-1])
 
-        if cv2.waitKey(1) == 27:  # ESC
-            if rvec is not None and tvec is not None:
-                print(f"Translation: {tvec}")
-                rot, _ = cv2.Rodrigues(rvec)
-                print(f"Rotation vector: \n{rvec}")
+                print(f"Rotation vector: \n{all_rvecs[-1]}")
                 print(f"Rotation: \n{rot}")
             break
 
-        if cv2.waitKey(1) == 32:  # SPACE
-            print("STORING DATA")
-            flg_store = True
+        cv2.imshow("Camera", img)
 
-    if len(all_tvecs) > 3:
+    if len(all_tvecs) > 5 and len(all_rvecs) > 5:
         avg_tvec = np.mean(all_rvecs, axis=0)
         avg_rvec = np.mean(all_tvecs, axis=0)
         rot, _ = cv2.Rodrigues(avg_rvec)
@@ -94,8 +99,8 @@ if __name__ == "__main__":
             rvec=avg_rvec
         )
 
-        print(f"Translation: {tvec}")
-        print(f"Rotation vector: \n{rvec}")
-        print(f"Rotation: \n{rot}")
+        print(f"Average translation: \n{tvec}")
+        print(f"Average rotation vector: \n{rvec}")
+        print(f"Rotation matrix: \n{rot}")
 
     camera.release()
