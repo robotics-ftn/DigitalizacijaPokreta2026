@@ -155,6 +155,7 @@ if __name__ == "__main__":
     # print(f"Reconstructed 3D points, in [mm]:\n{points_3d}")
 
     # Reproject 3D points in camera frame, draw circles
+    images_to_render = []
     for cam in cameras:
         images_path = dir_path + f"/data/pose/images/{cam.id}"
         img_files = list(Path(images_path).glob("*.png"))
@@ -168,6 +169,8 @@ if __name__ == "__main__":
         for point in points_3d:
             uv_pixels = cam.reproject_point3d_to_pixel(point)
             cv2.circle(img_undistort, (int(uv_pixels[0]), int(uv_pixels[1])), 5, (0, 0, 255), 2)
+        images_to_render.append(img_undistort)
 
-        cv2.imshow("Reproject points", img_undistort)
-        cv2.waitKey(0)
+    images_to_render = np.hstack(images_to_render)  # (H, W*num_cams, C)
+    cv2.imshow("Reproject points", images_to_render)
+    cv2.waitKey(0)
