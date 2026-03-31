@@ -42,6 +42,8 @@ if __name__ == "__main__":
     # ids = ['950122061707']
     dir_path = os.path.dirname(os.path.realpath(__file__))
 
+    rendered_images = []
+
     for id in ids:
         images_path = dir_path + f"/data/pose/images/{id}"
         calib_file = dir_path + f"/output/calib/{id}/calib.yaml"
@@ -63,12 +65,18 @@ if __name__ == "__main__":
                            [1, 1, -1],
                            [0, 1, -1]], dtype=np.float32)
         points = points * scale
+        points[:, 0] += 90  # offset X by 90mm
+        points[:, 1] += 60  # offset Y by 60mm
 
         all_images = Path(images_path).glob("*.png")
-        cv2.namedWindow("Rendered Points", cv2.WINDOW_KEEPRATIO)
+
         for image in all_images:
             img = cv2.imread(image)
             img = render_points(img, points, intrinsics, distortion, rot, trans, img_size=(img.shape[1], img.shape[0]))
-            cv2.imshow("Rendered Points", img)
-            cv2.waitKey(0)
+            rendered_images.append(img)
             break
+
+    cv2.namedWindow("Rendered Points", cv2.WINDOW_KEEPRATIO)
+    rendered_images.reverse()
+    cv2.imshow("Rendered Points", np.hstack(rendered_images))
+    cv2.waitKey(0)
