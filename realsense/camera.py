@@ -8,19 +8,21 @@ class Camera:
         """Camera object class.
 
         Args:
-            K (np.ndarray): _description_
-            D (np.ndarray): _description_
-            rvec (np.ndarray): _description_
-            tvec (np.ndarray): _description_
+            id (str): name of camera
+            K (np.ndarray): intrinsic camera params
+            D (np.ndarray): distortion coefs
+            rot (np.ndarray): rotation from world to camera coordinates
+            tvec (np.ndarray): translation from world to camera coordinates (object translation in camera frame)
         """
         self.id = id
         self.K = K
         self.D = D
-        self.tvec = np.array(tvec)  # object translation in camera frame
-        self.R = rot
-        self.T = self.get_camera_position()
+        self.tvec = np.array(tvec)           # object translation in camera frame
+        self.R = rot                         # Rotation from world to camera coordinates
+        self.T = self.get_camera_position()  # in world coordinates
 
     def get_camera_position(self):
+        """ Camera position in world coordinates. """
         camera_position = -self.R.T @ self.tvec.ravel()  # ravel() forces (3,)
         return camera_position
 
@@ -32,7 +34,9 @@ class Camera:
         return self.T, ray_world  # self.T already fixed above
 
     def reproject_point3d_to_pixel(self, point3d: np.ndarray):
-        # q = K * R * (Q - T), where T is camera position in world coords
+        # q = K * R * (Q - T)
+        # where T is camera position in world coords
+        # and R is rotation from world to camera coords
         pixel_point = self.K @ self.R @ (point3d - self.T)
         uv_pixels = pixel_point[:2]  # [u, v, s] = s * [u', v', 1]
         uv_pixels = uv_pixels / pixel_point[2]  # Normalize by depth
