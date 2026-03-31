@@ -30,3 +30,10 @@ class Camera:
         u_world = self.R.T @ u_cam
         ray_world = u_world / np.linalg.norm(u_world)
         return self.T, ray_world  # self.T already fixed above
+
+    def reproject_point3d_to_pixel(self, point3d: np.ndarray):
+        # q = K * R * (Q - T), where T is camera position in world coords
+        pixel_point = self.K @ self.R @ (point3d - self.T)
+        uv_pixels = pixel_point[:2]  # [u, v, s] = s * [u', v', 1]
+        uv_pixels = uv_pixels / pixel_point[2]  # Normalize by depth
+        return uv_pixels

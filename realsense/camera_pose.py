@@ -49,7 +49,7 @@ def camera_pose(images_path, calib_file,  file_name, widht, height, cell_size):
             txt = str(image).split("/")[-1]
             cv2.putText(undistorted, txt, (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 3)
             cv2.imshow('RealSense', undistorted)
-            cv2.waitKey(1)
+            cv2.waitKey(0)
 
     cv2.destroyAllWindows()
 

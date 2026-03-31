@@ -35,7 +35,7 @@ def calibrate(images_path, file_name, width, height, cell_size):
             img = cv2.drawChessboardCorners(
                 img, (width, height), corners2, ret)
             cv2.imshow('img', img)
-            cv2.waitKey(1)
+            cv2.waitKey(0)
     cv2.destroyAllWindows()
     ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(object_points, image_points, gray.shape[::-1], None, None)
     mean_error = 0
