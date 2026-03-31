@@ -52,3 +52,13 @@ Rezultat kalibracije poze kamere se skladisti u **output/pose/camera.npz**.
 
 Učitava prosleđene kalibracione parametre sačuvane u **npz** formatu. Vrši uživo otklanjanje distorzije slike spram parametara dobijenih kalibracijom. 
 Pritiskom na taster ***U*** možemo paliti/gasiti otklanjanje distorzije, na ***SPACE*** možemo sačuvati trenutni kadar.
+
+# Realsense kamera
+
+Uputstvo za instaliranje:
+https://github.com/realsenseai/librealsense
+
+Nakon instalacije SDK, instalirati python paket:
+```sh
+pip install pyrealsense2
+```
