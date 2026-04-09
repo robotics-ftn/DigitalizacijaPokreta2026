@@ -1,3 +1,12 @@
 
 .vscode/
 *__pycache__*
+
+realsense/data/calib/images
+realsense/data/pose/images
+
+
+# Media
+*.png
+*.jpg
+*.mp4

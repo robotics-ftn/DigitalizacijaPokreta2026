@@ -96,7 +96,7 @@ def record(img_name, vid_name, rate=15, size=(1920, 1080)):
 
 if __name__ == "__main__":
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    path = dir_path + "/data/pose/"
+    path = dir_path + "/data/Lazar/Squat/"
 
     vid_name = "{serial}/vid_{num:05d}.mp4"
     img_name = "{serial}/img_{num:05d}.png"

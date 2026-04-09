@@ -38,7 +38,7 @@ def render_points(img, points, intrinsics, distort, rot, trans, img_size=(1920, 
 
 if __name__ == "__main__":
 
-    ids = ['104122061649', '950122060411']
+    ids = ['950122061749']
     # ids = ['950122061707']
     dir_path = os.path.dirname(os.path.realpath(__file__))
 

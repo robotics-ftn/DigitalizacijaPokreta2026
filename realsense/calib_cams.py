@@ -35,7 +35,7 @@ def calibrate(images_path, file_name, width, height, cell_size):
             img = cv2.drawChessboardCorners(
                 img, (width, height), corners2, ret)
             cv2.imshow('img', img)
-            cv2.waitKey(0)
+            cv2.waitKey(10)
     cv2.destroyAllWindows()
     ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(object_points, image_points, gray.shape[::-1], None, None)
     mean_error = 0
@@ -57,13 +57,13 @@ def calibrate(images_path, file_name, width, height, cell_size):
 
 
 if __name__ == "__main__":
-    ids = ['104122061649', '950122060411']
+    ids = ['104122061649', '950122060411', '950122061749']
     # ids = ['950122061707']
     dir_path = os.path.dirname(os.path.realpath(__file__))
 
     for id in ids:
         images_path = dir_path + f"/data/calib/images/{id}"
-        w, h = 8, 5
+        w, h = 7, 5
         cell_size = 30
 
         output_calib_file = dir_path + f"/output/calib/{id}/calib.yaml"

@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-from camera import Camera
+from realsense.types import Camera
 
 
 def reconstruct_points(cameras: list[Camera], pixel_coords: list[np.ndarray]) -> np.ndarray:
@@ -50,50 +50,6 @@ def reconstruct_all_points(cameras: list[Camera], pixel_coords_list: list[list[n
         point_3d = reconstruct_points(cameras, pixel_coords)
         points_3d.append(point_3d)
     return np.array(points_3d)
-
-
-def reconstruct_points_analytical(cameras: list, pixel_coords_list: np.ndarray) -> np.ndarray:
-    """
-    Fully vectorized 3D reconstruction via closed-form normal equations.
-
-    Args:
-        cameras: list of Camera objects (N cameras)
-        pixel_coords_list: (P, N, 2) — P points, N cameras, 2 pixel coords
-
-    Returns:
-        points_3d: (P, 3)
-    """
-    N = len(cameras)
-    P = pixel_coords_list.shape[0]
-
-    T_all = np.array([cam.T for cam in cameras])       # (N, 3)
-
-    # Precompute ray directions: (N, P, 3)
-    u_all = np.zeros((N, P, 3))
-    for i, cam in enumerate(cameras):
-        pixels = pixel_coords_list[:, i, :]            # (P, 2)
-        q_h = np.hstack([pixels, np.ones((P, 1))])  # (P, 3)
-        u_cam = (np.linalg.inv(cam.K) @ q_h.T).T     # (P, 3)
-        u_world = (cam.R.T @ u_cam.T).T                # (P, 3)
-        norms = np.linalg.norm(u_world, axis=1, keepdims=True)
-        u_all[i] = u_world / norms                     # (P, 3)
-
-    # Build LHS (P, 3, 3) and RHS (P, 3)
-    LHS = np.zeros((P, 3, 3))
-    RHS = np.zeros((P, 3))
-
-    for i in range(N):
-        u = u_all[i]                                 # (P, 3)
-        uuT = u[:, :, None] * u[:, None, :]            # (P, 3, 3)
-        proj = np.eye(3)[None] - uuT                   # (P, 3, 3)
-
-        LHS += proj                                                  # (P, 3, 3)
-        RHS += (proj @ T_all[i]).reshape(P, 3)              # (P, 3)
-    print(f"LHS shape: {LHS.shape}")   # (40, 3, 3)
-    print(f"RHS shape: {RHS.shape}")   # (40, 3)
-    # Batched solve: LHS[p] @ Q[p] = RHS[p] for all p
-    points_3d = np.linalg.solve(LHS, RHS[:, :, None]).squeeze(-1)  # (P, 3)
-    return points_3d
 
 
 if __name__ == "__main__":

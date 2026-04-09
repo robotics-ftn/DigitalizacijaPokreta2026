@@ -49,7 +49,7 @@ def camera_pose(images_path, calib_file,  file_name, widht, height, cell_size):
             txt = str(image).split("/")[-1]
             cv2.putText(undistorted, txt, (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 3)
             cv2.imshow('RealSense', undistorted)
-            cv2.waitKey(0)
+            cv2.waitKey(50)
 
     cv2.destroyAllWindows()
 
@@ -60,7 +60,7 @@ def camera_pose(images_path, calib_file,  file_name, widht, height, cell_size):
     tvec = np.mean(all_tvec, axis=1).reshape(3, 1)
     cv2.namedWindow('Undistorted', cv2.WINDOW_KEEPRATIO)
     rot_mat, _ = cv2.Rodrigues(rvec)
-
+    cv2.waitKey(0)
     for i, image in enumerate(valid_images):
         img = cv2.imread(image)
         undistorted = cv2.undistort(img, cam_mat, dist_coeffs, None, cam_mat)
@@ -68,7 +68,7 @@ def camera_pose(images_path, calib_file,  file_name, widht, height, cell_size):
         undistorted = cv2.drawFrameAxes(undistorted, cam_mat, None, all_rvec[:, i], all_tvec[:, i], cell_size * 3)
         undistorted = cv2.drawChessboardCorners(undistorted, (widht, height), corners2, ret)
         cv2.imshow('Undistorted', undistorted)
-        cv2.waitKey(250)
+        cv2.waitKey(50)
 
     cv2.destroyAllWindows()
 
@@ -81,14 +81,16 @@ def camera_pose(images_path, calib_file,  file_name, widht, height, cell_size):
 
 
 if __name__ == "__main__":
-    ids = ['104122061649', '950122060411']
+    ids = ['104122061649', '950122061749']
     # ids = ['950122061707']
     dir_path = os.path.dirname(os.path.realpath(__file__))
 
     for id in ids:
         images_path = dir_path + f"/data/pose/images/{id}"
         w, h = 8, 5
-        cell_size = 30
+        cell_size = 65
 
-        output_calib_file = dir_path + f"/output/calib/{id}/calib.yaml"
-        camera_pose(images_path, output_calib_file, output_calib_file, int(w), int(h), cell_size)
+        input_calib_file = dir_path + f"/output/calib/{id}/calib.yaml"
+        output_calib_file = dir_path + f"/output/calib/{id}/pose.yaml"
+
+        camera_pose(images_path, input_calib_file, output_calib_file, int(w), int(h), cell_size)
